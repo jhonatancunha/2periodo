@@ -1,4 +1,4 @@
-#include"encadeada.h"
+#include"filaEncadeadaPrioridade.h"
 
 void teste1(){
     Fila* f1 = fila_cria();
@@ -14,17 +14,23 @@ void teste1(){
      int primeiro;
 
     fila_imprimir(f1);
-    // printf("\nEXISTE 20?  = %d\n", fila_contem(f1, 20));
-    // printf("EXISTE 10?  = %d\n", fila_contem(f1, 10));
-    // printf("EXISTE 12?  = %d\n", fila_contem(f1, 12));
+    
+    int* removed = fila_remover1(f1);
+    printf("\nRemovido: %d\n", *removed);
+    removed = fila_remover1(f1);
+    printf("\nRemovido: %d\n", *removed);
+    removed = fila_remover1(f1);
+    printf("\nRemovido: %d\n", *removed);
+    removed = fila_remover1(f1);
+    printf("\nRemovido: %d\n", *removed);
+    fila_imprimir(f1);    
 
-    // fila_primeiro(f1, &primeiro);
-    // printf("\nPrimeiro elemento da fila: %d\n", primeiro);
+    fila_inserir(f1, 3);
+    fila_inserir(f1, 1);
+    fila_inserir(f1, 11);
 
-    // int* removed = fila_remover1(f1);
-    // printf("\nRemovido: %d\n", *removed);
-    // fila_imprimir(f1);
 
+    fila_imprimir(f1);  
     // fila_primeiro(f1, &primeiro);
     // printf("\nPrimeiro elemento da fila: %d\n", primeiro);
 
