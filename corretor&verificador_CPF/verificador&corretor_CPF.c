@@ -40,18 +40,30 @@ int verificaCPF(int* cpf){
 
 int main (void){
     int cpf[11];
+    char teste[12];
 
-    printf("Digite seu CPF\n");
-    for(int i = 0; i < 11; i++){
-        printf("Numero %d: ", i+1);
-        scanf("%d", &cpf[i]);
+
+    printf("DIGITE SEU CPF: ");
+    scanf("%s", teste);
+
+    printf("\n");
+
+    for(int i = 0; i < strlen(teste); i++){
+        char aux[]={teste[i],'\0'};
+        cpf[i] = atoi(aux);
     }
+
     int verify = verificaCPF(cpf);
 
     if(verify == 0) printf("CPF CORRETO!\n");
     if(verify == 1) printf("ERRO ENCONTRADO E CORRIGIDO!\n");
 
+
+    int cont = 0;
     for(int i = 0; i < 11; i++){
-        printf("%d", cpf[i]);
+        if(cont == 2 || cont == 5) {printf("%d.", cpf[i]);}
+        else if(cont == 9) {printf("-%d", cpf[i]);}
+        else{printf("%d", cpf[i]);}
+        cont++;
     }
 }
