@@ -42,10 +42,11 @@ int main (void){
     int cpf[11];
     char teste[12];
 
-
+do{
     printf("DIGITE SEU CPF: ");
     scanf("%s", teste);
-
+    if(strlen(teste) <9 ) printf("O CPF DEVE TER NO MINIMO 9 DIGITOS\n"); 
+}while(strlen(teste) < 9);
     printf("\n");
 
     for(int i = 0; i < strlen(teste); i++){
