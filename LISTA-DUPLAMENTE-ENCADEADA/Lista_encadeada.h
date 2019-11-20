@@ -1,4 +1,5 @@
 #include<stdlib.h>
+#include<string.h>
 
 typedef enum boolean{false=0, true=1} Boolean;
 typedef int Tipo;
@@ -18,7 +19,7 @@ typedef struct{
 
 
 Lista* lista_criar(); // OK
-void lista_destruir(Lista* l);//OK
+Lista* lista_destruir(Lista* l);//OK
 
 Boolean lista_inserir(Lista* l, Tipo elemento, int posicao); // OK
 Boolean lista_inserir_fim(Lista* l, Tipo elemento);// OK
@@ -317,6 +318,11 @@ int lista_tamanho(Lista* l){
 *@PARAM : L = LISTA A SER IMPRESSA
 */
 void lista_imprimir(Lista* l){
+    if(l == NULL){
+        printf("Lista Inexistente!\n");
+        return;
+    }
+
     No* aux = l->primeiro;
 
     for(int i = 0; i < l->qtde; i++){
@@ -336,10 +342,12 @@ void destroy(No* no, int* qtde){
 
 /*FUNCAO PARA DESTRUIR LISTA
 *@PARAM : L = LISTA A SER IMPRESSA
+*@return NULL
 */
-void lista_destruir(Lista* l){
-    if(l == NULL) return;
-    if(l->qtde <= 0) return;
+Lista* lista_destruir(Lista* l){
+    if(l == NULL) return NULL;
+    if(l->qtde > 0) destroy(l->primeiro, &l->qtde);
 
-    destroy(l->primeiro, &l->qtde);
+    free(l);
+    return NULL;
 }

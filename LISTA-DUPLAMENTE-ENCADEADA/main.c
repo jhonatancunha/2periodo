@@ -78,7 +78,7 @@ int main(){
     lista_imprimir(list);
 
 
-    lista_destruir(list);
+    list = lista_destruir(list);
     printf("\n");
     lista_imprimir(list);
 
