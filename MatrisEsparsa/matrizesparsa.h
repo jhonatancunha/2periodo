@@ -167,7 +167,9 @@ void insereColuna(int linha, int coluna, Node* no, Matriz* m){
             no->baixo = aux->baixo;
         }
         aux->baixo = no;
-        no->cima = aux;    
+        no->cima = aux;
+
+        //QUANDO A POSICAO A SER INSERIDA É A ULTIMA
         if(sentinela->cima == aux) {
             no->baixo = sentinela;
             sentinela->cima = no;
@@ -197,10 +199,10 @@ void insereLinha(int linha,int coluna, Node* no, Matriz* m){
         }else if(aux->coluna > coluna){
            
         if(aux->esquerda != sentinela) aux = aux->esquerda;
-            aux->esquerda->direita = no;
-            no->direita = aux;
-            aux->esquerda = no;
-            
+        aux->esquerda->direita = no;
+        no->direita = aux;
+        aux->esquerda = no;
+        
         }else if(aux->coluna < coluna){
             if(aux->direita == sentinela) {
                 sentinela->esquerda = no;
@@ -209,6 +211,7 @@ void insereLinha(int linha,int coluna, Node* no, Matriz* m){
             aux->direita = no;
             no->esquerda = aux;
         }
+        //QUANDO A POSICAO A SER INSERIDA É A ULTIMA
         if(sentinela->esquerda == aux){
             no->direita = sentinela;
             sentinela->esquerda = no;
