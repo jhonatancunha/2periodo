@@ -28,7 +28,7 @@ Matriz* matriz_criar(int qtdeLinhas, int qtdeColunas);
 Boolean matriz_atribuir(Matriz* m, int linha, int coluna, int valor);
 int matriz_acessar(Matriz* m, int linha, int coluna);
 void matriz_imprimir(Matriz* m);
-Matriz* matriz_desalocar(Matriz* m);
+Matriz* matriz_desalocar(Matriz** m);
 
 
 /*FUNÇÕES AUXILIARES*/
@@ -39,7 +39,8 @@ Node* findNodeLinha(Node* aux,int coluna, Node* sentinela);
 
 
 //Libera toda memória alocada dinamicamente para a matriz.
-Matriz* matriz_desalocar(Matriz* m){
+Matriz* matriz_desalocar(Matriz** EnderecoMatriz){
+    Matriz* m = *EnderecoMatriz;
     if(m == NULL){
         printf("Matriz Inexistente!\n");
         return NULL;
@@ -75,7 +76,7 @@ Matriz* matriz_desalocar(Matriz* m){
     free(m->colunas);
     free(m->linhas);
     free(m);
-    return NULL;
+    *EnderecoMatriz = NULL;
 }
 
 
@@ -120,102 +121,72 @@ int matriz_acessar(Matriz* m, int linha, int coluna){
     if(linha >= m->numLinhas || linha < 0) return 0;
     if(coluna >= m->numColunas || coluna < 0) return 0;
 
-    Node* aux1 = findNodeColuna(m->colunas[coluna]->baixo, linha,m->colunas[coluna]);
+    Node* aux1 = findNodeLinha(m->linhas[linha]->direita, coluna,m->linhas[linha]);
     return aux1->valor;
 }
 
 
 //ACHA A POSICAO ANTERIOR A SER INSERIDA O NODE
 Node* findNodeColuna(Node* aux,int linha, Node* sentinela){
-    for(int i = 0; i < linha; i++){
-        if(aux->linha <= linha && aux->baixo != sentinela) aux = aux->baixo;
+    
+    while(aux != sentinela && linha > aux->linha){
+        aux = aux->baixo;
     }
+
+    // for(int i = 0; i < linha; i++){
+    //     if(aux->linha <= linha && aux->baixo != sentinela) aux = aux->baixo;
+    // }
     return aux;
 }
 
 
 Node* findNodeLinha(Node* aux,int coluna, Node* sentinela){
-    for(int i = 0; i < coluna; i++){        
-        if(aux->coluna != coluna && aux->direita != sentinela){
-            aux = aux->direita;
-        }
+    
+    while(aux != sentinela && coluna > aux->coluna){
+        aux = aux->direita;
+    }
+
+    // for(int i = 0; i < coluna; i++){        
+    //     if(aux->coluna != coluna && aux->direita != sentinela){
+    //         aux = aux->direita;
+    //     }
          
-    } 
+    // } 
     return aux;
 }
 
 
 //Insere o Nó na coluna informada
 void insereColuna(int linha, int coluna, Node* no, Matriz* m){
-    Node* sentinela = m->colunas[coluna];
+    Node* sentinela = m->colunas[coluna];   
+    Node* aux = findNodeColuna(sentinela->baixo, linha, sentinela);
     
-    if(sentinela->baixo == sentinela){
-        //COLUNA VAZIA
-        no->cima = sentinela;
-        no->baixo = sentinela;
-        sentinela->cima = no;
-        sentinela->baixo = no;
+    if(aux != sentinela && linha == aux->linha){
+        aux->valor = no->valor;
+        free(no);
     }else{
-        //COLUNA COM VALORES
-        Node* aux = findNodeColuna(sentinela->baixo, linha, sentinela);
-        
-        if(aux->linha == linha) {
-            aux->valor = no->valor;
-        }else if(aux->linha > linha){
-            aux = aux->cima;
-            aux->baixo->cima = no;
-            no->baixo = aux->baixo;
-        }
-        aux->baixo = no;
-        no->cima = aux;
-
-        //QUANDO A POSICAO A SER INSERIDA É A ULTIMA
-        if(sentinela->cima == aux) {
-            no->baixo = sentinela;
-            sentinela->cima = no;
-        }
+        no->baixo = aux;
+        no->cima = aux->cima;
+        aux->cima->baixo = no;
+        aux->cima = no;
     }
+
 }
 
 
 //Insere o Nó na linha informada
 void insereLinha(int linha,int coluna, Node* no, Matriz* m){
     Node* sentinela = m->linhas[linha];
+    Node* aux = findNodeLinha(sentinela->direita,coluna, sentinela);
 
-    if(sentinela->direita == sentinela){
-        //LINHA VAZIA
-        sentinela->direita = no;
-        no->esquerda = sentinela;
-        no->direita = sentinela;
-        sentinela->esquerda = no;
+    if(aux != sentinela && aux->coluna == coluna){
+        aux->valor = no->valor;
+        free(no);
     }else{
-        //LINHA COM VALORES
-        Node* aux = findNodeLinha(sentinela->direita,coluna, sentinela);
-
-        if(aux->coluna == coluna){
-            aux->valor = no->valor;
-            free(no);
-            return;
-        }else if(aux->coluna > coluna){
-           
-        if(aux->esquerda != sentinela) aux = aux->esquerda;
-        aux->esquerda->direita = no;
         no->direita = aux;
+        no->esquerda = aux->esquerda;            
+        aux->esquerda->direita = no;
         aux->esquerda = no;
-        
-        }else if(aux->coluna < coluna){
-            if(aux->direita == sentinela) {
-                sentinela->esquerda = no;
-                no->direita = sentinela;
-            }
-            aux->direita = no;
-            no->esquerda = aux;
-        }
-        //QUANDO A POSICAO A SER INSERIDA É A ULTIMA
-        if(sentinela->esquerda == aux){
-            no->direita = sentinela;
-            sentinela->esquerda = no;
-        }
     }
 }
 
