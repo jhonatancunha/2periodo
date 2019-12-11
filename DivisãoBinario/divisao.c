@@ -17,7 +17,9 @@ char somaBit(int a, int b, int* overflow);
 int* somaBinario(int* m, int* q, int maior);
 void shiftBit(int* a, int size);
 void fillBin(char* vetChar, int* m, int size);
-int* multiplyBin(char* m, char* q, int size);
+
+
+
 /*FUNÇÃO QUE SIMULA CIRCUITO SOMADOR
 *@param:    a = valor em binario
 *@param:    b = valor em binario
@@ -90,12 +92,12 @@ void shiftBitA(int* a, int size, int q0){
 *@param:    size = tamanho do vetor
 */
 void shiftBit(int* a, int size){
-    int aux = a[size];
+    int aux = a[size-1];
     int aux2;
-    a[size] = 0;
+    a[size-1] = 0;
     
 
-    for(int i = size; i >= 0; i--){
+    for(int i = size-1; i >= 0; i--){
         aux2 = a[i-1];
         a[i-1] = aux;
         aux = aux2;    
@@ -115,6 +117,39 @@ void fillBin(char* vetChar, int* m, int size){
         m[i] = atoi(aux);
         cont--;
     }   
+}
+
+//FAZ O COMPLEMENTO DE 2 NO M
+char* inversion2(char* m){
+    int flag = 0;
+    int size = strlen(m);
+    if(size < 4) size = 4;
+    char* mComplemento = (char*) calloc(size, sizeof(char));
+
+    if(strlen(m) < 4)   for(int i = 0; i < strlen(m)-1; i++) mComplemento[i] = 0;
+   
+    int x = strlen(m)-1;
+    char aux = '0';
+    for(int i = 3; i >= 0; i--){
+        if(flag == 0 && x >= 0){
+            mComplemento[i] = m[x];
+            if(mComplemento[i] == '1'){
+                if(m[x+1] == '0') aux = '1';
+                else aux = '0';
+                flag = 1;
+            }
+            x--;
+        }else if( x >= 0 && flag == 1){
+            if(m[x] == '0') aux = '1';
+            else aux = '0';
+            mComplemento[i] = aux;
+            x--;
+        }else{
+            mComplemento[i] = aux;
+        }
+    }
+
+    return mComplemento;
 }
 
 //FAZ O COMPLEMENTO DE 2 NO M
@@ -138,70 +173,78 @@ char* inversion(char* m){
 //FUNCAO QUE REALIZA DIVISAO DE BINARIOS
 void divisionOfBinary(char* mChar,char* qChar,char* mComplementoChar){
     //CRIAR VETORES
-    int* m = (int*) calloc(strlen(mChar), sizeof(int));
-    int* q = (int*) calloc(strlen(qChar), sizeof(int));
+    int sizeM = (strlen(mChar) < 4)? 4 : strlen(mChar);
+    int sizeQ = (strlen(qChar) < 4) ? 4 : strlen(qChar);
+    int* m = (int*) calloc(sizeM, sizeof(int));
+    int* q = (int*) calloc(sizeQ, sizeof(int));
+
     int* mComplemento = (int*) calloc(strlen(mComplementoChar), sizeof(int));
-    int* a = (int*) calloc((strlen(mChar)), sizeof(int));
+    int* a = (int*) calloc(sizeM, sizeof(int));
+    
     
     //PREENCHER VETORES
-    fillBin(qChar , q, strlen(qChar)-1);
-    fillBin(mChar , m, strlen(mChar)-1);
+    fillBin(qChar , q, sizeQ-1);
+    fillBin(mChar , m, sizeM-1);
     fillBin(mComplementoChar,mComplemento, strlen(mComplementoChar)-1);
 
 
     //BIT MAIS SIGNIFICADO DE M É ZERADO
     m[0] = 0;
 
-    printf("A: ");
-    for(int i = 0; i < (strlen(mChar)); i++) printf("%d", a[i]);
-    printf("\tQ: ");
-    for(int i = 0; i < (strlen(qChar)); i++) printf("%d", q[i]);
+    printf("M COMPLEMENTO: ");
+    for(int i = 0; i < strlen(mComplementoChar); i++) printf("%d", mComplemento[i]);
     printf("\n");
+    printf("A: ");
+    for(int i = 0; i < sizeM; i++) printf("%d", a[i]);
+    printf("\tQ: ");
+    for(int i = 0; i < sizeQ; i++) printf("%d", q[i]);
+    printf("\n");
+    
     int cont = 1;
 
+    //7 -VERIFICA BIT Q4
+    int q4 = sizeM-5;
+    if(sizeM <= 4) q4 = 0;
 
-    while(cont != strlen(qChar)+1){
+    while(cont != sizeQ+1){
 
         //5 - DESCOLA TUDO PARA ESQUERDA
-        shiftBitA(a, strlen(mChar)-1, q[0]);
-        shiftBit(q, strlen(qChar));
-        
+        shiftBitA(a, sizeM-1, q[0]);
+        shiftBit(q, sizeQ);
         
         printf("A: ");
-        for(int i = 0; i < (strlen(mChar)); i++) printf("%d", a[i]);
+        for(int i = 0; i < sizeM; i++) printf("%d", a[i]);
         printf("\tQ: ");
-        for(int i = 0; i < (strlen(qChar)); i++) printf("%d", q[i]);
+        for(int i = 0; i < sizeQ; i++) printf("%d", q[i]);
         printf("\n");
+
         //6 -PASSO DE SOMAR A-M
-        a = somaBinario(mComplemento, a, (strlen(mChar)));
+        a = somaBinario(mComplemento, a, (strlen(mComplementoChar)));
 
         printf("A: ");
-        for(int i = 0; i < (strlen(mChar)); i++) printf("%d", a[i]);
+        for(int i = 0; i < sizeM; i++) printf("%d", a[i]);
         printf("\tQ: ");
-        for(int i = 0; i < (strlen(qChar)); i++) printf("%d", q[i]);
+        for(int i = 0; i < sizeQ; i++) printf("%d", q[i]);
         printf("\n");
         
-        //7 -VERIFICA BIT Q4
-        int q4 = strlen(mChar)-4;
 
         if(a[q4] == 0){
-            q[strlen(qChar)-1] = 1;
+            q[sizeQ-1] = 1;
         }else{
             //PASSO DE SOMAR A+M
-            a = somaBinario(m, a, (strlen(mChar)+1));
-            q[strlen(qChar)-1] = 0;
+            a = somaBinario(m, a, sizeM);
+            q[sizeQ-1] = 0;
         }
-        printf("================================\n");
 
         printf("A: ");
-        for(int i = 0; i < (strlen(mChar)); i++) printf("%d", a[i]);
+        for(int i = 0; i < sizeM; i++) printf("%d", a[i]);
         printf("\tQ: ");
-        for(int i = 0; i < (strlen(qChar)); i++) printf("%d", q[i]);
+        for(int i = 0; i < sizeQ; i++) printf("%d", q[i]);
         printf("\n");
+        printf("================================\n");
         cont++;
-    }
+    }  
 
-    printf("   RESTO\tQUOCIENTE\n");
 
 }
 
@@ -209,10 +252,6 @@ int main(){
     char m[MAX];
     char q[MAX];
 
-    do{
-        printf("DIGITE O DIVISOR (M): ");
-        scanf("%s",m);
-    }while(strlen(m) >= MAX);
 
 
     do{
@@ -220,10 +259,19 @@ int main(){
         scanf("%s",q);
     }while(strlen(q) >= MAX);
 
-    char* mComplemento = inversion(m);
+    do{
+        printf("DIGITE O DIVISOR (M): ");
+        scanf("%s",m);
+    }while(strlen(m) >= MAX);
 
+    char* mComplemento;
+    if(strlen(m) < 4) mComplemento = inversion2(m);
+    else mComplemento = inversion(m);
+
+    printf("\n");
     printf("PROCESSO DE DIVISÃO DE BINARIO!\n================================\n");
     divisionOfBinary(m,q,mComplemento);
+
 
     return 0;
 }
